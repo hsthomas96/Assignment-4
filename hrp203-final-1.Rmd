@@ -41,7 +41,7 @@ library(Hmisc)
 library(broom) 
 library(knitr)
 
-CVrisk_data <- read_csv("~/Stanford '24-28/Year 1/Spring Quarter 2025/HRP 203/Assignment 2_Hannah Thomas/raw-data/cohort.csv") 
+CVrisk_data <- read_csv("~/Stanford '24-28/Year 1/Spring Quarter 2025/HRP 203/hrp203/cohort.csv") 
 
 ```
 
