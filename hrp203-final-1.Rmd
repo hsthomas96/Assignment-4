@@ -1,0 +1,281 @@
+---
+title: "Sex-Specific Differences in Cardiac Care"
+subtitle: "Hannah S. Thomas"
+format:
+  pdf:
+    documentclass: extarticle
+    fontsize: 10pt 
+    linestretch: 1
+    geometry: top=1in, bottom=1in, left=0.8in, right=0.8in
+    includes:
+      in-header: preamble.tex
+editor: visual
+bibliography: references.bib
+execute:
+  echo: false
+  results: 'hide'
+  warning: false
+  message: false
+---
+
+## Introduction
+
+Cardiovascular (CV) disease remains the number one cause of mortality among women worldwide [@vogel2021] There are unique, sex-specific biological variables such as body size, hormone levels and organ function which influence the risk of CV disease in women, their response to medications and clinical decision-making [@legato2016]. Seminal historical data has shown that the odds of undergoing a cardiac procedure were significantly less among white (aOR 0.72; 95% CI 0.63-0.83) and black women (aOR 0.50; 95% CI 0.37-0.68) compared to white men [@giles1995]. It appears that such differences are most pronounced for patients with borderline, less clear-cut symptommatology as noted in a similar Medicare sample of 140,000 patients [@rathore2002]. The differences in cardiac procedure rates between female and male patients have been shown to be driven by multiple factors, including less severe coronary artery disease in women, limiting understanding of CV disease in women, leading to fewer procedure recommendations, and gender bias in interpreting clinical symptoms such as pain [@sheifer2000].
+
+It remains unclear whether rate of procedural event appears to meaningfully influence total costs associated with hospitalization of cardiac patients. For example, in a US based cohort of patients who suffered acute myocardial infarction, the median hospitalization costs for women were approximately 20,000 USD less compared to male patients owing to many factors including a lower overall use of coronary intervention [@vallabhajosyula2020]. Conversely though, a population-level analysis from Israel demonstrated that when female cardiac patients underwent an operation, the procedural costs were greater compared to male patients [@brammligreenberg2022]. In order to adequately plan for reimbursements and resource allocation, further studies regarding sex differences in the cost of cardiac care are needed.
+
+By virtue of a novel, population-level dataset of US cardiac inpatients, this study aimed to investigate the number of cardiac procedures by sex and sex-specific differences in total inpatient costs. We hypothesized that women would be less likely to undergo a cardiac intervention compared to men, in keeping with prior literary consensus. Further, we hypothesized that inpatient costs would be less for female patients, largely attributed to fewer procedures. In the absence of granular data regarding CV risk factors for each patient and the length and complexity of each procedure, no definitive causal links will be established between procedure rate and costs. However, multivariate logistic and linear regression will reveal insights into each of these outcomes, spurring important future policy questions.
+
+```{r}
+#|echo: false
+#|message: false
+#|warning: false
+#|results: 'hide'
+
+library(tidyverse) 
+library(palmerpenguins) 
+library(table1) 
+library(readr) 
+library(ggplot2) 
+library(Hmisc) 
+library(broom) 
+library(knitr)
+
+CVrisk_data <- read_csv("cohort.csv") 
+
+```
+
+## Methods
+
+### Data Collection and Patient Sample
+
+Our sample included patients admitted to an acute cardiac inpatient ward at a tertiary-level hospital in northern California from 2016-2019. Individual, pre-defined patient and clinical variables (more below) were extracted from the electronic medical records (EMR) system. The index hospital visit was identified (i.e. admission to the cardiac ward) and patients were followed until their date of discharge or death in-hospital. If the patient had multiple admissions, the earliest one was used as the index visit and the rest excluded. Patients were excluded if they were \< 18 years old, did not have a biological sex listed in the EMR or if less than 50% of the variables were unable to be identified. Costs per patient were extracted from the hospital's inpatient claims data via unique patient identifiers.
+
+### Exposure
+
+The main exposure was biological sex, defined as sex assigned at birth. Previously in the Introduction, we used the terms "woman/female" and "man/male" interchangeably to reflect their heterogeneous use in the literature; however, from hereon out, "female" and "male" will be used to infer biological sex. Sex was treated as a binary variable- female/male.
+
+### Primary Outcomes
+
+The primary outcomes were receipt of cardiac procedure during inpatient stay and costs associated with the index hospital admission. Cardiac procedures were treated as a categorical binary variable - yes/no. Procedures included the possibility of one or more of the following: coronary angiogram, percutaneous coronary intervention and open cardiac surgery. Inpatient costs were treated as a continuous variable and measured in US dollars (USD). All costs associated with the index hospital admission were included, including costs of investigations, medications and procedures.
+
+### Covariates
+
+In addition to the primary exposure and outcomes, data regarding patients' age and smoking status were collected. Age was treated as a continuous variable and measured in years. Smoking status was defined as any history of regular tobacco use, and treated as a binary categorical variable - yes/no.
+
+### Statistical Analysis
+
+Descriptive analysis was performed to evaluate baseline differences in male vs. female patients. Univariate analysis was performed with a t-test for continuous variables and chi-squared for categorical variables to establish which variables would be appropriate in the multivariate model. To understand associations between patient sex and procedure use, multivariable logistic regression was performed with procedure use as the primary outcome. Age and smoking history were included as relevant covariates following univariate testing. The analysis equation was as follows: $$
+Y = \alpha + \beta_1(\text{sex}) + \beta_2(\text{age}) + \beta_3(\text{smoke}) + \varepsilon
+$$
+
+In the above, Y refers to procedure use (y/n) and alpha refers to the intercept. The first beta coefficient handles sex as a binary exposure (male= 0, female= 1), whereas the second beta coefficient handles age as a continuous variable. The third beta coefficient includes smoking history as binary, 1= yes, 0= no. The error term concludes the equation.
+
+To understand associations between patient sex and inpatient costs, multivariable linear regression was performed with costs (USD) as the primary outcome. Age, sex, smoking history and procedure use were included as relevant covariates following univariate testing. The analysis equation is as follows: $$
+Y = \alpha + \beta_1(\text{sex}) + \beta_2(\text{age}) + \beta_3(\text{smoke}) + \beta_4(\text{procedure}) + \varepsilon
+$$
+
+In the above, Y refers to inpatient costs (USD) and alpha refers to the intercept. The first beta coefficient handles sex as a binary exposure (male= 0, female= 1), whereas the second beta coefficient handles age as a continuous variable. The third beta coefficient includes smoking status as binary, 1= yes, 0= no, while the fourth refers to procedure use (yes=1, no=0). The error term concludes the equation. Statistical significance was set at p\<0.05.
+
+## Results
+
+### Sample Demographics
+
+A total of 5000 patients were included in the final analysis: 2226 (44.5%) male and 2774 (55.5%) female (Table 1). Overall, the mean patient age was 43.9 years old (+/- 15.1) and there were no significant differences by sex. Approximately 16% of patients had a history of tobacco use and this was also consistent across sex. The number of cardiac procedures varied significantly by sex with 10% of male patients undergoing some sort of procedure compared to 1% of female patients (p\<0.001). Finally, the mean inpatient costs for female patients were significantly less compared to male patients (\$9030 vs. \$9330; p\<0.001).
+
+```{r}
+#|echo: false
+#|message: false
+#|warning: false
+#|results: 'hide'
+
+#Table 1 
+CVrisk_data$cardiac <- factor(CVrisk_data$cardiac, levels=c(0,1), labels=c("No", "Yes"))
+
+CVrisk_data$smoke <- factor(CVrisk_data$smoke, levels=c(0,1), labels=c("No", "Yes"))
+
+CVrisk_data$female <- factor(CVrisk_data$female, levels=c(0,1), labels=c("Male", "Female"))
+
+label(CVrisk_data$smoke) <-"History of Smoking"
+label(CVrisk_data$female) <- "Sex" 
+label(CVrisk_data$age) <- "Age (years)"
+label(CVrisk_data$cost) <- "Cost (USD)" 
+label(CVrisk_data$cardiac) <- "Cardiac Procedure"
+
+#p-values
+pvalue <- function(x, ...) {
+  y <- unlist(x)
+  g <- factor(rep(1:length(x), times = sapply(x, length)))
+  
+  if (is.numeric(y)) {
+    p <- t.test(y ~ g)$p.value
+  } else {
+    p <- chisq.test(table(y, g))$p.value
+  }
+  
+  c("", sub("<", "<", format.pval(p, digits = 3, eps = 0.001)))
+}
+
+#Table 1
+
+table_one <- table1(
+  ~ age + smoke + cardiac + cost | female, 
+  data = CVrisk_data, 
+  overall = FALSE, 
+  extra.col = list(`P-value` = pvalue), 
+  caption = "Demographics of Study Sample"
+)
+
+kable(table_one, caption= "Demographics and Descriptive Outcomes of Study Sample")
+
+```
+
+### Univariate Analyses
+
+Separate univariate analyses were conducted to understand each variable's association/ relationship with the two primary outcomes: procedure use and inpatient costs (Table 2). With respect to procedure use, age was not found to be a statistically significant relationship (p=0.097). However, given the important clinical influence of age on likelihood of receiving a cardiac procedure, this variable was included in the multivariate model. Patient sex and history of smoking were both significantly related to procedure use and were included in the model. With respect to inpatient costs, age and sex (Figure 1) were both significantly associated with costs (p\<0.001) and thus were included in the multivariate model. In addition, history of smoking and cardiac procedure were also significantly associated with costs (p\<0.001) and included in the final analysis. All of these variables were deemed clinically relevant to costs, further reinforcing their inclusion.
+
+```{r}
+#|echo: false
+#|message: false
+#|warning: false
+#|results: 'hide'
+
+###Procedure Use### 
+#Age vs. Procedure Use 
+t_age <- t.test(age ~ cardiac, data = CVrisk_data) 
+
+#Sex vs, Procedure Use 
+tab_sex <- table(CVrisk_data$female, CVrisk_data$cardiac) 
+chi_sex <- chisq.test(tab_sex) 
+
+#Smoke vs. Procedure Use 
+tab_smoke <- table(CVrisk_data$smoke, CVrisk_data$cardiac) 
+chi_smoke <- chisq.test(tab_smoke) 
+
+###Inpatient Costs### 
+#Age vs. Cost 
+lm_age <- lm(cost ~ age, data = CVrisk_data) 
+
+#Sex vs. Cost 
+t_sex <- t.test(cost ~ female, data = CVrisk_data) 
+
+#Smoking vs. Cost 
+t_smoke <- t.test(cost ~ smoke, data = CVrisk_data) 
+
+#Procedure vs. Cost 
+t_cardiac <- t.test(cost ~ cardiac, data = CVrisk_data) 
+
+#Table 2 
+library(knitr) 
+table_two <- data.frame( 
+  Variable= c("Age", "Sex", "History of Smoking", "Cardiac Procedure"), 
+  Procedurepvalue= c("0.097", "<0.001", "<0.001", "NA"), 
+  Costpvalue=c("<0.001", "<0.001", "<0.001", "<0.001")
+
+)
+
+kable(table_two, caption= "Univariate Testing for Multivariate Regression Variables")
+
+#Figure 1 
+ggplot(CVrisk_data, aes(x = female, y = cost)) + 
+  geom_boxplot(fill = "lightblue", outlier.color = "red") + 
+  labs( title = "Figure 1: Distribution of Inpatient Costs by Sex", x = "Sex", y = "Cost (USD)" ) + 
+  scale_x_discrete(labels = c("Male", "Female")) + 
+  theme_minimal()+ 
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+```
+
+### Association Between Patient Sex and Cardiac Procedure
+
+From multivariate logistic regression, female patients had 92% lower odds of receiving a cardiac procedure during inpatient stay compared to males after adjusting for age and smoking history (aOR 0.08, 95% CI 0.06-0.12; p\<0.001) (Table 3, Figure 1). Smokers had an eight-fold greater odds of undergoing a procedure compared to non-smokers (aOR 8.26, 95% CI 6.27-10.91; p\<0.001). Age was not associated with a difference in odds of undergoing a cardiac procedure.
+
+```{r}
+#|echo: false
+#|message: false
+#|warning: false
+#|results: 'hide'
+
+procedure_model <- glm(cardiac~female+age+smoke, family= binomial(link="logit"), data= CVrisk_data)
+
+#Table 3 
+table_three <- tidy(procedure_model, conf.int = TRUE, exponentiate = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(
+    term = recode(term,
+                  "femaleFemale" = "Female",
+                  "age" = "Age",
+                  "smokeYes" = "History of Smoking"),
+    OR = round(estimate, 2),
+    `95% CI` = paste0("(", round(conf.low, 2), " – ", round(conf.high, 2), ")"),
+    p = case_when(
+      p.value < 0.001 ~ "< 0.001",
+      TRUE ~ as.character(round(p.value, 2))
+    )
+  ) %>%
+  select(Variable = term, OR, `95% CI`, p)
+
+knitr::kable(table_three, caption = "Predictors of Cardiac Procedure")
+
+#Figure 1 
+procedure_model_figure <- tidy(procedure_model, conf.int = TRUE, exponentiate = TRUE) 
+procedure_model_figure <- procedure_model_figure[procedure_model_figure$term != "(Intercept)", ]
+
+procedure_model_figure <- procedure_model_figure %>% mutate(term = recode(term, "femaleFemale" = "Female", "age" = "Age", "smokeYes" = "History of Smoking"))
+
+ggplot(procedure_model_figure, aes(x = term, y = estimate, ymin = conf.low, ymax = conf.high)) + 
+  geom_pointrange(size=0.2) + 
+  coord_flip() + 
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") + 
+  labs( title = "Figure 2: Adjustes Odds Ratio of Cardiac Procedure", x = "Variables", y = "Odds Ratio" )+   theme_minimal()+ 
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+```
+
+### Association Between Patient Sex and Inpatient Hospital Costs
+
+From multivariate linear regression, female patients had \$252.90 lower average inpatient costs compared to male patients, after adjusting for age, smoking history and cardiac procedure (95% CI 241.10-264.80; p\<0.001) (Table 4). Each additional year of age increased admission costs by \$15.80 (95% CI 15.40-16.20; p\<0.001). Those with a history of smoking and who underwent a cardiac procedure had \$542.00 (95% CI 525.60-558.30; p\<0.001) and \$408.20 (95% CI 380.40-436.10; p\<0.001) greater costs, respectively.
+
+```{r}
+#|echo: false
+#|message: false
+#|warning: false
+#|results: 'hide'
+
+cost_model <- lm(cost~female+age+smoke+cardiac, data=CVrisk_data) 
+
+#Table 4 
+table_four <- tidy(cost_model, conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(
+    term = recode(term, 
+                  "femaleFemale" = "Female", 
+                  "age" = "Age", 
+                  "smokeYes" = "History of Smoking", 
+                  "cardiacYes" = "Cardiac Procedure"),
+    Coefficient = round(estimate, 1),
+    `95% CI` = paste0("(", round(conf.low, 1), " – ", round(conf.high, 1), ")"),
+    p = case_when(
+      p.value < 0.001 ~ "< 0.001",
+      TRUE ~ as.character(round(p.value, 2))
+    )
+  ) %>%
+  select(Variable = term, Coefficient, `95% CI`, p)
+
+# Output the table
+knitr::kable(table_four, caption = "Predictors of Inpatient Costs (USD)")
+
+
+```
+
+## Discussion and Limitations
+
+Among a sample of 5000 cardiac inpatients in a tertiary hospital in northern California, female patients were significantly less likely to undergo a cardiac procedure compared to male patients. In a separate analysis, inpatient costs were significantly less for female patients as well. The former result is consistent with prior literature, including several population-level cohort analyses depicting sex differences in cardiac procedure uptake[@giles1995][@rathore2002][@nguyen2009] [@jneid2008]. With respect to cost, the picture is more complex and depends on factors such as service utilization, case complexity and patient preferences. Some surrounding medical literature notes higher costs for women owning to increased service utilization, [@owens2008] while others note lower adjusted costs for female patients in areas like stroke medicine [@yu2021]. In cardiac medicine, there appears to be no final consensus and future work is needed to answer this question.
+
+Our study was limited in several ways. Firstly, in the presence of cross-sectional data any inferences regarding causality are limited. Without granular data regarding each patient's co-morbidities and risk factor profile for cardiac disease, the clear mechanism underlying sex-differences in procedure use cannot be concluded. Further, while female patients certainly underwent fewer procedures than male patients, we cannot attribute lower costs to this mechanism alone. There may have been other, unmeasured variables which accounted for the sex-specific cost differences we observed such as use of medication. Finally, our study was a single-centre analysis in northern California, which may limit generalization to other hospital settings or states with differing healthcare systems and patient demographics.
+
+While challenging to establish causality and mechanisms with this dataset, these findings spur important questions for future work. For example, a propensity score analysis could be a useful tool to tease apart the reasons behind female patients receiving fewer procedures. In addition, a complete breakdown of inpatient costs would offer detailed insights into the cost- burden and help us understand the share attributable to procedure use compared to other interventions such as investigations and medications. Overall, this study serves as an important prompt to better understand sex-specific differences in cardiac care.
+
+I did not use generative AI technology (e.g., ChatGPT) to complete any portion of the work.
+
+## References
